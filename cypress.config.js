@@ -17,21 +17,25 @@ module.exports = defineConfig({
   video: true,
   videosFolder: 'cypress/videos',
 
-  reporter: 'mochawesome',
-
-  reporterOptions : {
-    reportDir: 'cypress/results',
-    overwrite: false,
-    html: false,
-    json: true,
-  },
+  // reporter: 'mochawesome',
 
   // reporterOptions : {
   //   reportDir: 'cypress/results',
-  //   overwrite: false,
-  //   html: false,
-  //   json: true,
+  //   overwrite: true,
+  //   html: true,
+  //   json: false,
   // },
+
+  reporter: 'cypress-mochawesome-reporter',
+  reporterOptions: {
+    reportDir: 'cypress/results',
+    overwrite: false,
+    html: true,
+    json: true,
+    charts: true,
+    embeddedScreenshots: true,
+    inlineAssets: true,
+  },
 
 
   e2e: {
@@ -42,6 +46,7 @@ module.exports = defineConfig({
 
 
     setupNodeEvents(on, config) {
+      require('cypress-mochawesome-reporter/plugin')(on)
 
       on('task', {
         async queryDatabase(query) {

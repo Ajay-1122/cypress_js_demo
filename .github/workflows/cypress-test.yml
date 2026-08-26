@@ -25,42 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Create the report directory explicitly
-      - name: Create report directory
-        run: mkdir -p cypress/results
-
-      - name: Run Cypress tests with mochawesome
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v7
         with:
           browser: chrome
-          command: npx cypress run --reporter mochawesome --reporter-options "reportDir=${{ github.workspace }}/cypress/results,overwrite=false,html=false,json=true"
-
-      # Debug: List what files were actually created
-      - name: Debug - List report files
-        if: always()
-        run: |
-          echo "=== Files in cypress/results ==="
-          ls -la cypress/results/ || echo "Directory does not exist"
-          echo "=== All mochawesome JSON files ==="
-          find . -name "*.json" -path "*/mochawesome*" 2>/dev/null || echo "No mochawesome files found"
-
-      - name: Merge Mochawesome JSON reports
-        if: always()
-        run: npx mochawesome-merge "cypress/results/*.json" -o cypress/results/merged-report.json
-
-      - name: Generate HTML report
-        if: always()
-        run: npx marge cypress/results/merged-report.json -f index -o cypress/results/html
-
-      - name: Upload Cypress artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-artifacts
-          path: |
-            cypress/screenshots
-            cypress/videos
-            cypress/results/html
 
       - name: Upload HTML report
         if: always()
@@ -68,3 +36,17 @@ jobs:
         with:
           name: cypress-html-report
           path: cypress/results/html/index.html
+
+      - name: Upload screenshots (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Upload videos (always)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
