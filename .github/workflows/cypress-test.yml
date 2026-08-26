@@ -29,6 +29,7 @@ jobs:
         uses: cypress-io/github-action@v7
         with:
           browser: chrome
+          command: npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/results,overwrite=false,html=false,json=true"
 
       - name: Merge Mochawesome JSON reports
         if: always()
@@ -36,7 +37,7 @@ jobs:
 
       - name: Generate HTML report
         if: always()
-        run: npx marge cypress/results/merged-report.json -f index -o cypress/results
+        run: npx marge cypress/results/merged-report.json -f index -o cypress/results/html
 
       - name: Upload Cypress artifacts
         if: always()
@@ -46,4 +47,11 @@ jobs:
           path: |
             cypress/screenshots
             cypress/videos
-            cypress/results
+            cypress/results/html
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-html-report
+          path: cypress/results/html/index.html
