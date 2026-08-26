@@ -19,6 +19,8 @@ require('cypress-xpath')
 require('@4tw/cypress-drag-drop')
 // Require only the commands file to avoid loading the plugin (tedious) in the browser
 require('cypress-sql-server/src/commands/db.js')();
+import 'cypress-mochawesome-reporter/register'
+
 
 Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes('Script error')) {
