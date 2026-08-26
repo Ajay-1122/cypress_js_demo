@@ -1,0 +1,13 @@
+export const myData = {
+    name: "ajay",
+    email: "example@test.com" ,
+    phone: "7353847394",
+    address: "my address",
+    gender: "male",
+    day: "monday",
+    country: "India",
+    color: "Blue",
+    date1: "05/06/2026",
+    startDate: "2026-02-25",
+    endDate: "2026-03-26"
+}
