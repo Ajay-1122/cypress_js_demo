@@ -26,15 +26,14 @@ module.exports = defineConfig({
   //   json: false,
   // },
 
-  reporter: 'cypress-mochawesome-reporter',
+  reporter: "cypress-mochawesome-reporter",
+
   reporterOptions: {
-    reportDir: 'cypress/results',
-    overwrite: false,
-    html: true,
-    json: true,
-    charts: true,
-    embeddedScreenshots: true,
-    inlineAssets: true,
+      reportDir: "cypress/results",
+      charts: true,
+      reportPageTitle: "Cypress Test Report",
+      embeddedScreenshots: true,
+      inlineAssets: true
   },
 
 
