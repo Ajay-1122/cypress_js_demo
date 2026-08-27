@@ -8,6 +8,9 @@ pipeline {
     options {
         timestamps()
     }
+    triggers {
+        cron('H/30 * * * *')
+    }
 
     stages {
         stage('Verify Environment') {
