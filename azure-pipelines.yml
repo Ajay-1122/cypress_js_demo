@@ -8,6 +8,15 @@ pr:
     include:
       - main
 
+
+schedules:
+  - cron: "0,30 * * * *"
+    displayName: Every 30 minutes
+    branches:
+      include:
+        - main
+    always: true
+
 pool:
   vmImage: ubuntu-latest
 
