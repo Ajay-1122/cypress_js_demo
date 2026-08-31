@@ -1,0 +1,51 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    displayName: 'Checkout source code'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '22.x'
+    displayName: 'Install Node.js 22'
+
+  - script: |
+      node --version
+      npm --version
+    displayName: 'Verify Node.js and npm'
+
+  - script: npm ci
+    displayName: 'Install project dependencies'
+
+  - script: npx cypress verify
+    displayName: 'Verify Cypress binary'
+
+  - script: npx cypress run --browser chrome --reporter spec
+    displayName: 'Run Cypress tests'
+
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: 'cypress/screenshots'
+      ArtifactName: 'cypress-screenshots'
+      publishLocation: 'Container'
+    displayName: 'Publish Cypress screenshots'
+
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: 'cypress/videos'
+      ArtifactName: 'cypress-videos'
+      publishLocation: 'Container'
+    displayName: 'Publish Cypress videos'
