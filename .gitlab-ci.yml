@@ -1,19 +1,7 @@
-image: cypress/browsers:node-22.14.0-chrome-131.0.6778.264-1-ff-134.0.1-edge-131.0.2903.86-1
+image: cypress/included:15.17.0
 
 stages:
   - test
-
-cache:
-  key:
-    files:
-      - package-lock.json
-  paths:
-    - .npm/
-    - .cache/Cypress/
-
-variables:
-  npm_config_cache: "$CI_PROJECT_DIR/.npm"
-  CYPRESS_CACHE_FOLDER: "$CI_PROJECT_DIR/.cache/Cypress"
 
 cypress_tests:
   stage: test
@@ -21,8 +9,7 @@ cypress_tests:
   script:
     - node --version
     - npm --version
-    - npm ci
-    - npx cypress verify
+    - npx cypress --version
     - npx cypress run --browser chrome --reporter spec
 
   artifacts:
