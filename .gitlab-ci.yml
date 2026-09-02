@@ -19,5 +19,3 @@ cypress_tests:
       - cypress/screenshots/
       - cypress/videos/
       - cypress/results/
-
-      
