@@ -4,15 +4,54 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
+
   workflow_dispatch:
 
 jobs:
-  cypress:
+
+  # ==========================================
+  # INSTALL / PREPARE
+  # ==========================================
+  install:
     runs-on: ubuntu-latest
+
     steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies and Cypress
+        uses: cypress-io/github-action@v7
+        with:
+          runTests: false
+
+
+  # ==========================================
+  # CYPRESS PARALLEL WORKERS
+  # ==========================================
+  cypress:
+    needs: install
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        containers: [1, 2, 3]
+
+    steps:
+
       - name: Checkout source code
         uses: actions/checkout@v4
 
@@ -25,36 +64,56 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Cypress tests
+      - name: Run Cypress tests in parallel
         uses: cypress-io/github-action@v7
         with:
           browser: chrome
+          record: true
+          parallel: true
+          group: UI-Chrome
 
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_CLOUD_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ==========================================
+      # DEBUG REPORT
+      # ==========================================
       - name: Debug - Check report files
         if: always()
         run: |
           echo "=== Checking cypress/results folder ==="
           ls -la cypress/results/ || echo "Folder does not exist"
+
           echo "=== Checking for HTML files ==="
           find cypress/results -name "*.html" 2>/dev/null || echo "No HTML files found"
 
+      # ==========================================
+      # HTML REPORT
+      # ==========================================
       - name: Upload HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-html-report
+          name: cypress-html-report-${{ matrix.containers }}
           path: cypress/results/html/index.html
 
-      - name: Upload screenshots (on failure)
-        if: failure()
+      # ==========================================
+      # SCREENSHOTS
+      # ==========================================
+      - name: Upload screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-${{ matrix.containers }}
           path: cypress/screenshots
 
-      - name: Upload videos (always)
-        if: ${{ !cancelled() }}
+      # ==========================================
+      # VIDEOS
+      # ==========================================
+      - name: Upload videos
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-videos
+          name: cypress-videos-${{ matrix.containers }}
           path: cypress/videos
