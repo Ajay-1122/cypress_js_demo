@@ -73,7 +73,7 @@ jobs:
           group: UI-Chrome
 
         env:
-          CYPRESS_CLOUD_RECORD_KEY: ${{ secrets.CYPRESS_CLOUD_RECORD_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_CLOUD_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ==========================================
